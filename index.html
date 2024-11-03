@@ -5,10 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Neo's Modding Wiki</title>
     <link rel="stylesheet" href="styles.css">
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js"></script>
-    <script src="app.js" defer></script>
+    <script type="module" src="app.js" defer></script>
 </head>
 <body>
     
@@ -16,9 +13,9 @@
         <aside class="sidebar">
             <button id="login-button">Login with GitHub</button>
             <h2>Categories</h2>
-            <button id="create-category" style="display:none;">Create New Category</button>
             <div id="category-list"></div>
-            <button id="create-wiki-page-sidebar" style="display:none;">Create New Wiki Page</button> <!-- New Button -->
+            <button id="create-category" style="display:none;">Create Category</button>
+            <button id="create-wiki-page-sidebar" style="display:none;">Create New Wiki Page</button>
         </aside>
         <main>
             <header>
@@ -29,6 +26,12 @@
             <div id="comments-section"></div>
             <textarea id="comment-input" placeholder="Write your comment here..." required></textarea>
             <button id="post-comment" style="display:none;">Post Comment</button>
+
+            <h2>Create a New Wiki Page</h2>
+            <input type="text" id="wiki-title" placeholder="Wiki Page Title" required>
+            <textarea id="wiki-content" placeholder="Wiki Page Content (HTML)"></textarea>
+            <textarea id="wiki-css" placeholder="Custom CSS"></textarea>
+            <button id="create-wiki-page" style="display:none;">Create Wiki Page</button>
         </main>
     </div>
     <footer>
