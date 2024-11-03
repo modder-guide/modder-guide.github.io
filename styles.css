@@ -1,51 +1,196 @@
 body {
     font-family: Arial, sans-serif;
     margin: 0;
-    padding: 20px;
-    background-color: #f9f9f9;
+    background-color: #121212; /* Dark background */
+    color: #e0e0e0; /* Light text */
 }
 
-header {
-    background-color: #6200ea;
-    color: white;
+.container {
+    display: flex;
+}
+
+.sidebar {
+    height: 100%;
+    width: 250px; /* Width of sidebar */
+    background-color: #1e1e1e; /* Darker sidebar */
     padding: 20px;
-    text-align: center;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.5);
+}
+/* General Styles for Categories */
+.category {
+    margin-bottom: 10px;
+}
+
+/* Styles for Category Titles */
+.category-title {
+    cursor: pointer;
+    color: #b700ff;
+    transition: all 0.5s ease;
+    display: flex;
+    align-items: center; /* Align arrow and text */
+    font-size: 1.2em; /* Slightly larger font for categories */
+}
+
+.arrow {
+    margin-right: 8px; /* Space between arrow and text */
+}
+
+/* Styles for Sub-Category Titles */
+.subcategory-title {
+    cursor: pointer;
+    transition: all 0.5s ease;
+    color: #b700ff; /* A darker shade for sub-categories */
+    display: flex;
+    align-items: center; /* Align arrow and text */
+    margin-left: 20px; /* Indent sub-category titles */
+    font-size: 1.1em; /* Slightly smaller than category title */
+}
+
+/* Arrow hover effects */
+.category-title:hover,
+.subcategory-title:hover {
+    color:blue;
+}
+
+/* Styles for Pages under sub-categories */
+.pages {
+    padding-left: 40px; /* Indent pages more for sub-category */
+    padding-top: 5px; /* Add some space above pages */
+}
+
+/* Styles for individual Page entries */
+.page {
+    cursor: pointer;
+    margin-bottom: 5px; /* Space between pages */
+    background-color: #2d0036; /* Light background for pages */
+    padding: 10px;
+    border-radius: 5px; /* Rounded corners for pages */
+    transition: background-color 0.3s ease; /* Smooth transition for hover */
+}
+
+.page:hover {
+    cursor: pointer;
+    background-color: #ff0000; /* Darker background on hover */
+}
+.container2 {
+    display: flex;               /* Use flexbox for layout */
+    flex-direction: column;      /* Arrange children in a column */
+    justify-content: flex-end;   /* Push the <pre> to the bottom */
+    height: 1000px;              /* Set a height for the container */
+    border: 1px solid #ccc;     /* Optional: for visibility */
+    padding: 10px;              /* Optional: space around content */
+    overflow: hidden;           /* Hide overflow content */
+}
+pre{
+    overflow-wrap: break-word;   /* Allow wrapping for long words */
+    white-space: pre-wrap;       /* Preserve whitespace and wrap lines */
+    max-height: 500px;           /* Set a max height for the <pre> element */
+    overflow: auto;  
+}
+.pages {
+    padding-left: 20px;
+}
+
+.sidebar h2 {
+    color: #e0e0e0; /* Light text for headings */
+}
+
+
+.main-content {
+    flex-grow: 1; /* Takes up the remaining space */
+    padding: 20px;
 }
 
 h1 {
-    margin: 0;
+    justify-content: center;
+    text-align: center;
+    align-items: center;
+    color: #9c27b0; /* Purple title */
+}
+h3{
+    justify-content: center;
+    text-align: center;
+    align-items: center;
+    color: red;
+}
+red{
+    color:red;
 }
 
-h2 {
-    margin-top: 20px;
-}
-
-form {
-    margin-bottom: 20px;
-}
-
-input[type="text"], textarea {
+input, select, textarea, button {
     width: 100%;
     padding: 10px;
-    margin: 5px 0 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+    margin: 10px 0;
+    border: 1px solid #6a1b9a; /* Purple border */
+    background-color: #1e1e1e; /* Input background */
+    color: #e0e0e0; /* Input text */
 }
 
 button {
-    background-color: #6200ea;
-    color: white;
-    padding: 10px 15px;
+    background-color: #6a1b9a; /* Purple button */
+    color: #fff; /* White text */
     border: none;
-    border-radius: 4px;
     cursor: pointer;
 }
 
 button:hover {
-    background-color: #3700b3;
+    background-color: #9c27b0; /* Lighter purple on hover */
 }
 
-ul {
-    list-style-type: none;
-    padding: 0;
+textarea {
+    height: 100px; /* Fixed height for text area */
+    resize: none; /* Disable resizing */
+}
+/* Add this to your existing styles.css */
+
+.main-content {
+    
+    background-color: #121212; /* Dark background for detail page */
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+#detail-content {
+    width: 75%;
+    background-color: #1e1e1e; /* Darker background for detail content */
+    padding: 15px;
+    align-items: center;
+    border-radius: 5px;
+    justify-content: center;
+    text-align: center;
+    margin: 20px auto;
+}
+
+h2 {
+    color: #9c27b0; /* Purple color for page title */
+}
+
+code {
+    color: #e0e0e0; /* Light color for code text */
+    background-color: #292929; /* Dark background for code blocks */
+    display: block;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.buttonXD {
+    width: 50%; /* 50% of the window width */
+    height: 50px; /* Fixed height */
+    border-radius: 50px; /* Rounded corners */
+    background-color: #6a1b9a; /* Background color */
+    color: #ffffff; /* Text color */
+    text-align: center; /* Center text horizontally */
+    text-decoration: none;
+    display: flex; /* Use flexbox to center text vertically */
+    align-items: center; /* Center text vertically */
+    justify-content: center; /* Center text horizontally */
+    margin: 20px auto; /* Center the button in the middle of the page with some margin */
+    font-size: 14px; /* Set font size */
+    border: none; /* Optional: remove default border */
+    cursor: pointer; /* Change cursor to pointer on hover */
+}
+
+.buttonXD:hover {
+    background-color: #9c27b0; /* Lighter purple on hover */
 }

@@ -1,86 +1,35 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Wiki</title>
+    <title>Modder Guide</title>
     <link rel="stylesheet" href="styles.css">
-    <!-- Add Firebase SDKs from CDN -->
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-analytics.js"></script>
-    <script src="app.js" type="module"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
 </head>
 <body>
-    <header>
-        <h1>Welcome to My Wiki!</h1>
-    </header>
+    <div class="container">
+        <div class="sidebar">
+            <h2>Pages</h2>
+            <div id="pages-list"></div>
+        </div>
+        <div class="main-content">
+            <h1>Welcome to the modder guide</h1>
+            <h3>a guide to modding EVERY game</h3>
+            <form id="page-form">
+                <input type="text" id="title" placeholder="Page Title" required>
+                <input type="text" id="author" placeholder="Author Name" required>
+                <input id="category" type="text" placeholder="Category" required>
+                <input id="subcategory" type="text" placeholder="Sub-Category(optional)">
+                <textarea id="content" placeholder="Write your content here..." required></textarea>
+                <button type="submit">Create Page</button>
+            </form>
+        </div>
+    </div>
+    
 
-    <main>
-        <h2>Submit a New Page</h2>
-        <form id="wikiForm">
-            <input type="text" id="title" placeholder="Page Title" required>
-            <textarea id="content" placeholder="Page Content" required></textarea>
-            <button type="submit">Submit</button>
-        </form>
-
-        <h2>Pages</h2>
-        <ul id="pageList"></ul>
-    </main>
+    <script src="script.js"></script>
 </body>
 </html>
-
-<script>
-// Initialize Firebase
-const firebaseConfig = {
-    apiKey: "AIzaSyDaFNiGCH8D-0rnmXAH9PoJRkJQk42WDM4",
-    authDomain: "modder-wiki.firebaseapp.com",
-    projectId: "modder-wiki",
-    storageBucket: "modder-wiki.firebasestorage.app",
-    messagingSenderId: "563119242271",
-    appId: "1:563119242271:web:3fce73d1284124dc1a692a",
-    measurementId: "G-5ME15EMK89"
-};
-
-// Initialize Firebase
-const app = firebase.initializeApp(firebaseConfig);
-const db = app.firestore(); // Use app.firestore() to get the Firestore instance
-
-// Handle form submission
-document.getElementById('wikiForm').addEventListener('submit', submitForm);
-
-async function submitForm(e) {
-    e.preventDefault(); // Prevent default form submission behavior
-
-    const title = document.getElementById('title').value;
-    const content = document.getElementById('content').value;
-
-    try {
-        // Add a new document with a generated ID
-        const docRef = await db.collection('pages').add({
-            title: title,
-            content: content,
-            timestamp: new Date()
-        });
-        console.log("Page added with ID: ", docRef.id); // Log the document ID
-        document.getElementById('wikiForm').reset(); // Reset form after submission
-    } catch (error) {
-        console.error("Error adding page: ", error); // Log the error
-    }
-}
-
-// Fetch and display pages
-db.collection('pages').onSnapshot((snapshot) => {
-    const pageList = document.getElementById('pageList');
-    pageList.innerHTML = ''; // Clear the list first
-
-    snapshot.forEach(doc => {
-        const data = doc.data();
-        const li = document.createElement('li');
-        li.textContent = `${data.title}: ${data.content}`;
-        pageList.appendChild(li);
-    });
-});
-
-</script>
