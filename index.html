@@ -3,39 +3,75 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Neo's Modding Wiki</title>
+    <title>My Wiki</title>
     <link rel="stylesheet" href="styles.css">
-    <script type="module" src="app.js" defer></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js"></script>
 </head>
 <body>
-    
-    <div class="container">
-        <aside class="sidebar">
-            <button id="login-button">Login with GitHub</button>
-            <h2>Categories</h2>
-            <div id="category-list"></div>
-            <button id="create-category" style="display:none;">Create Category</button>
-            <button id="create-wiki-page-sidebar" style="display:none;">Create New Wiki Page</button>
-        </aside>
-        <main>
-            <header>
-                <h1>Neo's Modding Wiki</h1>
-                <div id="user-info"></div>
-            </header>
-            <h2>Comments</h2>
-            <div id="comments-section"></div>
-            <textarea id="comment-input" placeholder="Write your comment here..." required></textarea>
-            <button id="post-comment" style="display:none;">Post Comment</button>
+    <header>
+        <h1>Welcome to My Wiki!</h1>
+    </header>
 
-            <h2>Create a New Wiki Page</h2>
-            <input type="text" id="wiki-title" placeholder="Wiki Page Title" required>
-            <textarea id="wiki-content" placeholder="Wiki Page Content (HTML)"></textarea>
-            <textarea id="wiki-css" placeholder="Custom CSS"></textarea>
-            <button id="create-wiki-page" style="display:none;">Create Wiki Page</button>
-        </main>
-    </div>
-    <footer>
-        <p>Terms of Service: By using this site, you agree to our terms.</p>
-    </footer>
+    <main>
+        <h2>Submit a New Page</h2>
+        <form id="wikiForm">
+            <input type="text" id="title" placeholder="Page Title" required>
+            <textarea id="content" placeholder="Page Content" required></textarea>
+            <button type="submit">Submit</button>
+        </form>
+
+        <h2>Pages</h2>
+        <ul id="pageList"></ul>
+    </main>
+
+    <script>
+        // Your Firebase configuration
+        const firebaseConfig = {
+  apiKey: "AIzaSyDaFNiGCH8D-0rnmXAH9PoJRkJQk42WDM4",
+  authDomain: "modder-wiki.firebaseapp.com",
+  projectId: "modder-wiki",
+  storageBucket: "modder-wiki.firebasestorage.app",
+  messagingSenderId: "563119242271",
+  appId: "1:563119242271:web:3fce73d1284124dc1a692a",
+  measurementId: "G-5ME15EMK89"
+};
+
+        // Initialize Firebase
+        const app = firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        // Submit form and add data to Firestore
+        document.getElementById('wikiForm').addEventListener('submit', submitForm);
+
+        function submitForm(e) {
+            e.preventDefault();
+            const title = document.getElementById('title').value;
+            const content = document.getElementById('content').value;
+
+            db.collection('pages').add({
+                title: title,
+                content: content,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            }).then(() => {
+                console.log("Page added!");
+                document.getElementById('wikiForm').reset(); // Reset form
+            }).catch(error => {
+                console.error("Error adding page: ", error);
+            });
+        }
+
+        // Fetch and display pages
+        db.collection('pages').onSnapshot(snapshot => {
+            const pageList = document.getElementById('pageList');
+            pageList.innerHTML = ''; // Clear the list first
+            snapshot.forEach(doc => {
+                const data = doc.data();
+                const li = document.createElement('li');
+                li.textContent = `${data.title}: ${data.content}`;
+                pageList.appendChild(li);
+            });
+        });
+    </script>
 </body>
 </html>

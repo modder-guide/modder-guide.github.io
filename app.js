@@ -1,8 +1,7 @@
 // Import necessary Firebase functions
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
 import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-analytics.js";
-import { getAuth, GithubAuthProvider, onAuthStateChanged, signInWithPopup } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
-import { getFirestore, collection, addDoc, onSnapshot, orderBy, query } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+import { getFirestore, collection, addDoc, onSnapshot, orderBy, query, getDocs } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -19,61 +18,47 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
 
-// Initialize Firebase Auth and Firestore
-const auth = getAuth(app);
+// Initialize Firestore
 const db = getFirestore(app);
 
-// GitHub Login
-document.getElementById('login-button').onclick = () => {
-    const provider = new GithubAuthProvider();
-    signInWithPopup(auth, provider)
-        .then((result) => {
-            const user = result.user;
-            console.log(`User signed in: ${user.displayName}`);
-            document.getElementById('user-info').innerText = `Welcome, ${user.displayName}`;
-            document.getElementById('create-category').style.display = 'block'; // Show create category button
-            document.getElementById('create-wiki-page-sidebar').style.display = 'block'; // Show create wiki page button
-        })
-        .catch((error) => {
-            console.error('Error during sign-in:', error);
-        });
+// Fetch categories from Firestore and populate the category dropdown
+const fetchCategories = async () => {
+    const categorySelect = document.getElementById('wiki-category');
+    const categoriesSnapshot = await getDocs(collection(db, 'categories'));
+    categoriesSnapshot.forEach(doc => {
+        const option = document.createElement('option');
+        option.value = doc.id; // or option.value = doc.data().name if you have a name field
+        option.textContent = doc.data().name; // Assuming each category document has a 'name' field
+        categorySelect.appendChild(option);
+    });
 };
-
-// Handle authentication state changes
-onAuthStateChanged(auth, (user) => {
-    if (user) {
-        document.getElementById('user-info').innerText = `Welcome, ${user.displayName}`;
-        document.getElementById('post-comment').style.display = 'block'; // Show post comment button
-    } else {
-        document.getElementById('user-info').innerText = 'Please log in.';
-        document.getElementById('post-comment').style.display = 'none'; // Hide post comment button
-    }
-});
 
 // Create a new wiki page
 document.getElementById('create-wiki-page').onclick = async () => {
     const title = document.getElementById('wiki-title').value;
-    const content = document.getElementById('wiki-content').value;
-    const css = document.getElementById('wiki-css').value;
-    
-    if (title && content) {
+    const content = document.getElementById('editor').value;
+    const author = document.getElementById('wiki-author').value;
+    const category = document.getElementById('wiki-category').value;
+
+    if (title && content && author && category) {
         try {
             await addDoc(collection(db, 'wikiPages'), {
                 title: title,
                 content: content,
-                css: css,
-                author: auth.currentUser.displayName,
+                author: author,
+                category: category, // Store the selected category
                 createdAt: new Date() // Use a date object for createdAt
             });
             console.log('Wiki page created!');
             document.getElementById('wiki-title').value = ''; // Reset the title
-            document.getElementById('wiki-content').value = ''; // Reset the content
-            document.getElementById('wiki-css').value = ''; // Reset custom CSS
+            document.getElementById('editor').value = ''; // Reset the content
+            document.getElementById('wiki-author').value = ''; // Reset the author
+            document.getElementById('wiki-category').value = ''; // Reset the category
         } catch (error) {
             console.error('Error adding wiki page:', error);
         }
     } else {
-        alert('Please provide a title and content for the wiki page.');
+        alert('Please provide a title, content, author, and select a category for the wiki page.');
     }
 };
 
@@ -87,11 +72,17 @@ const fetchWikiPages = () => {
             const data = doc.data();
             const listItem = document.createElement('div');
             listItem.className = 'category';
-            listItem.innerHTML = `<h3>${data.title} <span>▼</span></h3>`;
+            listItem.innerHTML = `
+                <h3>${data.title} <span>▼</span></h3>
+                <p><strong>Author:</strong> ${data.author}</p>
+                <p><strong>Category:</strong> ${data.category}</p>
+                <div class="wiki-content">${data.content}</div>
+            `;
             wikiList.appendChild(listItem);
         });
     });
 };
 
-// Call the function to fetch wiki pages when the script loads
+// Call the functions to fetch categories and wiki pages when the script loads
+fetchCategories();
 fetchWikiPages();
