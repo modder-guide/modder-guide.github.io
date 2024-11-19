@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Extended Cipher and Decipher Tool</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        textarea {
+            width: 100%;
+            height: 100px;
+            margin-bottom: 10px;
+        }
+        select, input, button {
+            margin: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Extended Cipher and Decipher Tool</h1>
+    <textarea id="inputText" placeholder="Enter text here"></textarea>
+    <br>
+    <select id="cipherType">
+        <option value="chaos">Chaos Cipher</option>
+        <option value="railFence">Rail Fence Cipher</option>
+        <option value="caesar">Caesar Cipher</option>
+        <option value="atbash">Atbash Cipher</option>
+        <option value="vigenere">Vigenère Cipher</option>
+        <option value="reverse">Reverse Cipher</option>
+    </select>
+    <br>
+    <label for="keyInput">Key (for Caesar, Rail Fence, and Vigenère):</label>
+    <input type="text" id="keyInput" placeholder="Enter key">
+    <br>
+    <button onclick="cipher()">Cipher</button>
+    <button onclick="decipher()">Decipher</button>
+    <h2>Output:</h2>
+    <textarea id="outputText" readonly></textarea>
+
+    <script>
+        function chaosCipher(text) {
+            return text.split('').sort(() => Math.random() - 0.5).join('');
+        }
+
+        function railFenceCipher(text, key) {
+            if (key < 2) return text;
+            let rails = Array.from({ length: key }, () => []);
+            let direction = 1, rail = 0;
+            for (let char of text) {
+                rails[rail].push(char);
+                rail += direction;
+                if (rail === 0 || rail === key - 1) direction *= -1;
+            }
+            return rails.flat().join('');
+        }
+
+        function railFenceDecipher(text, key) {
+            if (key < 2) return text;
+            let pattern = Array.from({ length: text.length }, (_, i) => 0);
+            let direction = 1, rail = 0;
+
+            for (let i = 0; i < text.length; i++) {
+                pattern[i] = rail;
+                rail += direction;
+                if (rail === 0 || rail === key - 1) direction *= -1;
+            }
+
+            let rails = Array.from({ length: key }, () => []);
+            let index = 0;
+
+            for (let i = 0; i < key; i++) {
+                for (let j = 0; j < pattern.length; j++) {
+                    if (pattern[j] === i) {
+                        rails[i].push(text[index]);
+                        index++;
+                    }
+                }
+            }
+
+            rail = 0;
+            direction = 1;
+            let result = '';
+            for (let i = 0; i < text.length; i++) {
+                result += rails[rail].shift();
+                rail += direction;
+                if (rail === 0 || rail === key - 1) direction *= -1;
+            }
+            return result;
+        }
+
+        function caesarCipher(text, shift) {
+            return text.replace(/[a-zA-Z]/g, char => {
+                const base = char < 'a' ? 65 : 97;
+                return String.fromCharCode((char.charCodeAt(0) - base + shift) % 26 + base);
+            });
+        }
+
+        function caesarDecipher(text, shift) {
+            return caesarCipher(text, 26 - shift);
+        }
+
+        function atbashCipher(text) {
+            return text.replace(/[a-zA-Z]/g, char => {
+                const base = char < 'a' ? 65 : 97;
+                return String.fromCharCode(base + 25 - (char.charCodeAt(0) - base));
+            });
+        }
+
+        function vigenereCipher(text, key, decipher = false) {
+            key = key.toUpperCase();
+            let result = '', keyIndex = 0;
+            for (let char of text) {
+                if (/[a-zA-Z]/.test(char)) {
+                    const base = char < 'a' ? 65 : 97;
+                    const shift = key.charCodeAt(keyIndex % key.length) - 65;
+                    const offset = decipher ? 26 - shift : shift;
+                    result += String.fromCharCode((char.charCodeAt(0) - base + offset) % 26 + base);
+                    keyIndex++;
+                } else {
+                    result += char;
+                }
+            }
+            return result;
+        }
+
+        function reverseCipher(text) {
+            return text.split('').reverse().join('');
+        }
+
+        function cipher() {
+            const text = document.getElementById("inputText").value;
+            const cipherType = document.getElementById("cipherType").value;
+            const key = document.getElementById("keyInput").value;
+            let result = '';
+
+            switch (cipherType) {
+                case 'chaos':
+                    result = chaosCipher(text);
+                    break;
+                case 'railFence':
+                    result = railFenceCipher(text, parseInt(key));
+                    break;
+                case 'caesar':
+                    result = caesarCipher(text, parseInt(key));
+                    break;
+                case 'atbash':
+                    result = atbashCipher(text);
+                    break;
+                case 'vigenere':
+                    result = vigenereCipher(text, key);
+                    break;
+                case 'reverse':
+                    result = reverseCipher(text);
+                    break;
+                default:
+                    result = 'Invalid cipher selected.';
+            }
+
+            document.getElementById("outputText").value = result;
+        }
+
+        function decipher() {
+            const text = document.getElementById("inputText").value;
+            const cipherType = document.getElementById("cipherType").value;
+            const key = document.getElementById("keyInput").value;
+            let result = '';
+
+            switch (cipherType) {
+                case 'railFence':
+                    result = railFenceDecipher(text, parseInt(key));
+                    break;
+                case 'caesar':
+                    result = caesarDecipher(text, parseInt(key));
+                    break;
+                case 'atbash':
+                    result = atbashCipher(text); // Atbash is reversible.
+                    break;
+                case 'vigenere':
+                    result = vigenereCipher(text, key, true);
+                    break;
+                case 'reverse':
+                    result = reverseCipher(text); // Reverse is reversible.
+                    break;
+                default:
+                    result = 'Decipher not available for this cipher.';
+            }
+
+            document.getElementById("outputText").value = result;
+        }
+    </script>
+</body>
+</html>
