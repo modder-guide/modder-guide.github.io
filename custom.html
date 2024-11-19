@@ -32,7 +32,7 @@
         <option value="reverse">Reverse Cipher</option>
     </select>
     <br>
-    <label for="keyInput">Key (for Caesar, Rail Fence, and Vigenère):</label>
+    <label for="keyInput">Key (for applicable ciphers):</label>
     <input type="text" id="keyInput" placeholder="Enter key">
     <br>
     <button onclick="cipher()">Cipher</button>
@@ -41,10 +41,38 @@
     <textarea id="outputText" readonly></textarea>
 
     <script>
-        function chaosCipher(text) {
-            return text.split('').sort(() => Math.random() - 0.5).join('');
+        // Deterministic random number generator for Chaos Cipher
+        function seedRandom(seed) {
+            let value = seed % 2147483647;
+            if (value <= 0) value += 2147483646;
+            return () => (value = (value * 16807) % 2147483647) / 2147483647;
         }
 
+        // Chaos Cipher
+        function chaosCipher(text, seed) {
+            const random = seedRandom(seed);
+            const indices = Array.from(text.keys());
+            const shuffledIndices = indices.slice().sort(() => random() - 0.5);
+            const result = Array(text.length);
+            shuffledIndices.forEach((newIdx, originalIdx) => {
+                result[newIdx] = text[originalIdx];
+            });
+            return result.join('');
+        }
+
+        // Chaos Decipher
+        function chaosDecipher(text, seed) {
+            const random = seedRandom(seed);
+            const indices = Array.from(text.keys());
+            const shuffledIndices = indices.slice().sort(() => random() - 0.5);
+            const result = Array(text.length);
+            shuffledIndices.forEach((newIdx, originalIdx) => {
+                result[originalIdx] = text[newIdx];
+            });
+            return result.join('');
+        }
+
+        // Rail Fence Cipher
         function railFenceCipher(text, key) {
             if (key < 2) return text;
             let rails = Array.from({ length: key }, () => []);
@@ -91,6 +119,7 @@
             return result;
         }
 
+        // Caesar Cipher
         function caesarCipher(text, shift) {
             return text.replace(/[a-zA-Z]/g, char => {
                 const base = char < 'a' ? 65 : 97;
@@ -102,6 +131,7 @@
             return caesarCipher(text, 26 - shift);
         }
 
+        // Atbash Cipher
         function atbashCipher(text) {
             return text.replace(/[a-zA-Z]/g, char => {
                 const base = char < 'a' ? 65 : 97;
@@ -109,6 +139,7 @@
             });
         }
 
+        // Vigenère Cipher
         function vigenereCipher(text, key, decipher = false) {
             key = key.toUpperCase();
             let result = '', keyIndex = 0;
@@ -126,6 +157,7 @@
             return result;
         }
 
+        // Reverse Cipher
         function reverseCipher(text) {
             return text.split('').reverse().join('');
         }
@@ -138,7 +170,7 @@
 
             switch (cipherType) {
                 case 'chaos':
-                    result = chaosCipher(text);
+                    result = chaosCipher(text, parseInt(key));
                     break;
                 case 'railFence':
                     result = railFenceCipher(text, parseInt(key));
@@ -169,6 +201,9 @@
             let result = '';
 
             switch (cipherType) {
+                case 'chaos':
+                    result = chaosDecipher(text, parseInt(key));
+                    break;
                 case 'railFence':
                     result = railFenceDecipher(text, parseInt(key));
                     break;
